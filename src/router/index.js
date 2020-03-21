@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Dennis from '../page/dennis/Dennis.vue'
+import Dennis from '../page/dennis/ui/Dennis.vue'
 
 Vue.use(VueRouter)
 

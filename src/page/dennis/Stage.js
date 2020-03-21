@@ -1,4 +1,3 @@
-// import * as THREE from "../../../three.js/src/Three.js"
 import * as THREE from '../../lib/three.module.js'
 import { OrbitControls } from '../../lib/OrbitControls.js'
 
@@ -28,19 +27,20 @@ export class Stage {
     let vW = this.containerEle.clientWidth;
     let vH = this.containerEle.clientHeight;
     this.renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: false,
-      preserveDrawingBuffer: true,
-      failIfMajorPerformanceCaveat: true,
+      antialias: false,
     });
-    this.renderer.setClearColor(0xdddddd, 1.0);
-    this.renderer.autoClear = true;
+    this.renderer.setClearColor(0xffffff, 1.0);
+    // this.renderer.autoClear = true;
+    // this.renderer.autoClearColor = true;
+    // this.renderer.autoClearDepth = true
+    // this.renderer.autoClearStencil = true
+    // this.renderer.autoScaleCubemaps = true
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(vW, vH, false);
     this.containerEle.appendChild(this.renderer.domElement);
     this.camera = new THREE.PerspectiveCamera(45, 1, 0.01, 1000)
 
-    // this.camera.lookAt(0, 0, 0)
+    this.camera.lookAt(0, 0, 0)
     this.camera.name = "camera";
     this.scene.add(this.camera);
     window.addEventListener("resize", this.handleResize);
@@ -95,13 +95,17 @@ export class Stage {
   _loop() {
     that.camera.updateProjectionMatrix();
     that.camera.updateMatrixWorld()
-    // that.renderer.render(that.scene, that.camera);
-
+    that.renderer.render(that.scene, that.camera);
     that.fuArr.forEach(fun => {
       fun()
     });
     that.control && that.control.update()
     requestAnimationFrame(that._loop)
+  }
+
+  changeCamera(camera) {
+    this.camera = camera
+    // console.error(camera.name);
   }
 }
 
