@@ -46,10 +46,14 @@ export default class PairPool {
         } while (item.busy && requirements(item) && i < this.items.length);
 
         if (item.busy) {
-            console.warn('No available items!');
+            console.error('No available items!');
         }
 
         item.busy = true;
         return item;
+    }
+
+    return(item) {
+        item.busy = false;
     }
 }

@@ -15,7 +15,7 @@ export class Stage {
     // 场景
     this.scene = new THREE.Scene();
     this.scene.name = "moumade";
-    window.scene = this.scene;
+    // window.scene = this.scene;
 
     // 环境光
     var ambient = new THREE.AmbientLight(0xffffff, 1.0);

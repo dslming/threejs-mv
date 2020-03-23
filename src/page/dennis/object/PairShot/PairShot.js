@@ -41,13 +41,14 @@ export default class PairShot {
 
     // 停止展示
     stop() {
-        const { stage, player } = dao.getData()
+        const { stage, player, pairPool } = dao.getData()
         stage.scene.remove(this.container);
         player.removeLoopFn(this.updataName)
         for (var id in this.checkedOut) {
             var pair = this.checkedOut[id];
             pair.reset();
             delete this.checkedOut[pair.id];
+            pairPool.return(pair)
         }
     }
 

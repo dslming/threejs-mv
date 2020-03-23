@@ -97,8 +97,7 @@ export default class DriftShot extends PairShot {
   }
 
   start() {
-    console.error(this.container.name);
-
+    console.error(this.container.name, this.numPairs);
     for (var i = 0; i < this.numPairs; i++) {
       var behavior = new CameraControl()
       behavior.target = this.next();
@@ -119,7 +118,7 @@ export default class DriftShot extends PairShot {
         track: 2,
         time: between(this.in, this.out)
       }));
-
+      console.error("useMidi", popEvents.length);
       popEvents.forEach((note, i) => {
         var pair = this.next();
         pair.scale.set(0.0001, 0.0001, 0.0001);

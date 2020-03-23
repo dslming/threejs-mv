@@ -72,7 +72,7 @@ export default class IntroShot extends PairShot {
         this.lastJump = Date.now() + 2200;
         this.nextJumpTime = random(900, 1800);
 
-        this.scatterPairs = this.get((pairPool.size - this.count) / 5);
+        this.scatterPairs = this.get(100);
         this.scatterPairs.forEach(function (p, i) {
 
             p.position.y = map(i, 0, this.scatterPairs.length, this.offsetY + 40000, 0);
@@ -90,7 +90,7 @@ export default class IntroShot extends PairShot {
         }, this);
 
         // 等待时的静止shot
-        this.planetPairs = this.get(pairPool.size);
+        this.planetPairs = this.get(200);
         this.planetPairs.forEach(function (p, i) {
             // p.position.set( random.range(), random.range(), random.range() );
 

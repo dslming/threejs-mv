@@ -27,6 +27,7 @@ window.dao = dao
 export default class App {
   constructor() {
     window.lm = this
+    this.dao = dao
     this.stage = new Stage("#canvasFather")
     dao.setData({
       stage: this.stage,
@@ -59,14 +60,13 @@ export default class App {
       dao.setData({ player: this.player })
 
       this.initBackground()
-      const pairPool = new PairPool(100)
+      const pairPool = new PairPool(1000)
       pairPool.init(() => {
         dao.setData({ pairPool, player: this.player })
         this.addShots()
         this.player.run()
-        this.player.play()
+        // this.player.play()
       })
-      // this.debug = new Debug()
     })
 
   }
@@ -133,7 +133,7 @@ export default class App {
   }
 
   addShots() {
-    const { player, bg } = dao.getData()
+    const { player } = dao.getData()
     if (Config.debug) {
       var testShot = new TestShot()
       player.addShot(0, testShot)
@@ -143,19 +143,18 @@ export default class App {
       return
     }
 
-    // var introShot = new IntroShot()
-    // player.addShot(0, introShot)
-    // player.timeline.time(0, false)
-    // player.timeline.stop()
+    var introShot = new IntroShot()
+    player.addShot(0, introShot)
+    player.timeline.time(0, false)
+    player.timeline.stop()
 
     var anotherDrift = new DriftShot(500, 0.1, 30, false, undefined);
-    player.addShot(1, anotherDrift)
+    player.addShot(0, anotherDrift)
     this.anotherDrift = anotherDrift
 
-    var thirdDriftShot = new DriftShot(500, 1, 30, false, undefined);
+    var thirdDriftShot = new DriftShot(500, 1, 40, false, undefined);
     player.addShot(8.5, thirdDriftShot);
     this.thirdDriftShot = thirdDriftShot
 
-    // addShot(14.0.beats, new DriftShot(300, 0.8, 30, true, 1));
   }
 }
