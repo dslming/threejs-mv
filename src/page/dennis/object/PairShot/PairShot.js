@@ -26,7 +26,7 @@ export default class PairShot {
 
         this.checkedOut = {}
         this.pairPool = dao.getData().pairPool
-        this.update = this.update.bind(this)
+        this._update = this._update.bind(this)
 
     }
 
@@ -36,7 +36,7 @@ export default class PairShot {
         stage.changeCamera(this.camera)
         stage.scene.add(this.container);
         this.updataName = Date.now()
-        player.addLoopFn(this.update, this.updataName)
+        player.addLoopFn(this._update, this.updataName)
     }
 
     // 停止展示
@@ -52,7 +52,7 @@ export default class PairShot {
         }
     }
 
-    update() {
+    _update() {
         const { player } = dao.getData()
         this.now = player.now - this.in
         this.timeline.time(this.now, false);
@@ -70,7 +70,7 @@ export default class PairShot {
         var pair = this.pairPool.next(req);
         this.checkedOut[pair.id] = pair;
         pair.reset();
-        this.container.add(pair);
+        // this.container.add(pair);
         return pair;
     }
 }

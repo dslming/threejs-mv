@@ -10,42 +10,46 @@ export default class IntroShot extends PairShot {
         this.container.name = "IntroShot"
         this.container.position.y = 0;
 
-        this.count = 50;
         this.jumpIndex = 0;
         this.insertIndex = 0;
         this.colorIndex = 0;
         this.scale = 1;
-        this.offsetY = -10000;
         this.jumpSide = 1;
+        this.basePosition = {
+            x: 0,
+            y: -10000,
+            z: -35000
+        }
 
         // 这里注意 far 和 near参数,可能出现闪烁的情况
         this.camera.position.z = 100;
         this.camera.near = 10;
         this.camera.far = 50000;
         this.camera.fov = 50;
-        this.camera.position.y = this.offsetY;
-        this.camera.distance = 100
-
+        this.camera.position.y = this.basePosition.y;
 
         this._addTitle()
-
         this.timeline2 = new TimelineLite({ paused: false });
         this.planetContainer = new THREE.Object3D();
         this.planetContainer.name = "planetContainer"
-        this.planetContainer.position.y = this.offsetY;
-        this.planetContainer.position.z = -35000
+        this.planetContainer.position.y = this.basePosition.y;
+        this.planetContainer.position.z = this.basePosition.z
         this.container.add(this.planetContainer);
 
         this.ry = random.range(0.0001, 0.0002);
         this.rx = random.range(0.0001, 0.0002);
 
-        this.pairs = this.get(this.count);
-        this.pairs.forEach(function (p, i) {
-            p.position.y = this.offsetY - 300;
+        // 飞起来弹出的shot
+        const flyContainer = new THREE.Object3D();
+        flyContainer.name = "flyContainer"
+        this.pairs = this.get(10);
+        this.pairs.forEach((p, i) => {
+            p.position.y = this.basePosition.y - 300;
             p.scale.set(this.scale, this.scale, this.scale);
-        }, this);
+            flyContainer.add(p)
+        });
         this.planetPairs = [];
-
+        this.container.add(flyContainer)
     }
 
     _addTitle() {
@@ -59,8 +63,8 @@ export default class IntroShot extends PairShot {
         dennisTitle.name = "dennisTitle"
         dennisTitle.material.map.magFilter = THREE.NearestFilter;
         dennisTitle.material.color = new THREE.Color(0xffffff);
-        dennisTitle.position.z = -35000;
-        dennisTitle.position.y = this.offsetY
+        dennisTitle.position.z = this.basePosition.z;
+        dennisTitle.position.y = this.basePosition.y;
         dennisTitle.scale.multiplyScalar(15);
         this.container.add(dennisTitle);
     }
@@ -72,51 +76,47 @@ export default class IntroShot extends PairShot {
         this.lastJump = Date.now() + 2200;
         this.nextJumpTime = random(900, 1800);
 
-        this.scatterPairs = this.get(100);
-        this.scatterPairs.forEach(function (p, i) {
-
-            p.position.y = map(i, 0, this.scatterPairs.length, this.offsetY + 40000, 0);
-            var d = random(1000, 4000);
+        // 垂直分散shot
+        const scatterContainer = new THREE.Object3D();
+        scatterContainer.name = "scatterContainer"
+        const scatterPairs = this.get(100);
+        scatterPairs.forEach(function (p, i) {
+            p.position.y = map(i, 0, scatterPairs.length, this.basePosition.y + 40000, 0);
+            var d = random(100, 500);
             var a = random(Math.PI + 0.8, 2 * Math.PI - 0.8);
             p.position.x = Math.cos(a) * d;
             p.position.z = Math.sin(a) * d;
             p.strokeInflate(0.65);
             if (p.position.y < -500) {
-                // p.male.position.set( random(), random(), random() );
-                p.scale.setLength(map(i, 0, this.scatterPairs.length, 22, 1) + random(6));
-                // p.male.position.setLength( random( 200, 1000 ) );
-                // p.male.visible = true;
+                p.scale.setLength(map(i, 0, scatterPairs.length, 22, 1) + random(6));
             }
+            scatterContainer.add(p)
         }, this);
+        this.container.add(scatterContainer);
 
         // 等待时的静止shot
-        this.planetPairs = this.get(200);
-        this.planetPairs.forEach(function (p, i) {
-            // p.position.set( random.range(), random.range(), random.range() );
-
-            p.position.y = Math.cos(i / this.planetPairs.length * Math.PI * 2);
-            p.position.z = Math.sin(i / this.planetPairs.length * Math.PI * 2);
+        this.planetPairs = this.get(50);
+        this.planetPairs.forEach((p, i) => {
+            p.position.y = random.range();
+            p.position.z = random.range();
             p.position.x = random.range();
             p.position.setLength(i % 2 === 0 ? random(10000, 30000) : random(45000, 48000));
             p.scale.setLength(random(50, 100));
-            this.planetContainer.add(p);
-
             p.rx = random(0.002) * random.sign();
             p.ry = random(0.002) * random.sign();
-
-            p.female.visible = false;// i % 4 === 0;
+            this.planetContainer.add(p);
+            p.female.visible = i % 4 === 0;
             p.male.visible = !p.female.visible;
             p.male.position.set(0, 0, 0);
-
-        }, this);
+        });
 
 
         // hehehe
         _.defer(function () {
             bg.solid(0x824199);
-
         }.bind(this))
-        bg.position.y = this.offsetY;
+
+        bg.position.y = this.basePosition.y;
         bg.updateMatrix();
         this.container.add(bg);
         super.start()
@@ -127,8 +127,6 @@ export default class IntroShot extends PairShot {
     }
 
     stop() {
-        // Stage.frozenLoop.off('update', this.update);
-        // clearInterval(this.interval);
         super.stop()
         const { player } = dao.getData()
         player.removeLoopFn("IntroShot_update")
@@ -146,30 +144,8 @@ export default class IntroShot extends PairShot {
         pair.male.position.z = 250;
 
         this.jumpSide *= -1;
-        var timeline = pair.jump2(this.offsetY + random(150 / 4));
+        var timeline = pair.jump2(this.basePosition.y + random(150 / 4));
         timeline.add(pair.insert2(1.0), 0.5);
-        timeline.call(function () {
-            // bg.solid( pair.colorMale );
-        }, [], this, 0.9)
-    }
-
-    color() {
-        // bg.colorLow = this.pairs[ this.colorIndex % this.pairs.length ].colorMale.getHex();
-        // bg.colorHigh = bg.colorLow;
-        // this.colorIndex++;
-    }
-
-    insert() {
-
-        var pair = this.pairs[this.insertIndex % this.pairs.length];
-        this.insertIndex++;
-
-        var speed = 1.6;
-
-        this.timeline2.add(pair.insert(speed), this.now);
-        // this.timeline.call( Renderer.setClearColor, [ pair.colorMale, 1 ], this.now - )
-
-
     }
 
     update() {

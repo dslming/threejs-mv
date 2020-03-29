@@ -7,6 +7,10 @@ import Background from './object/Background.js'
 import TestShot from './object/TestShot.js'
 import IntroShot from './object/IntroShot.js'
 import DriftShot from './object/DriftShot.js'
+import SexyShot from './object/SexyShot.js'
+import SwirlShot from './object/SwirlShot.js'
+import JumpShot from './object/JumpShot.js'
+import RainShot from './object/RainShot.js'
 
 // core
 import { Stage } from './Stage.js'
@@ -23,6 +27,11 @@ require('./Assets.js')
 // 用于调试
 window.THREE = THREE
 window.dao = dao
+
+const InOut = function (k) {
+  if ((k *= 2) < 1) return 0.5 * k * k * k * k * k;
+  return 0.5 * ((k -= 2) * k * k * k * k + 2);
+}
 
 export default class App {
   constructor() {
@@ -60,8 +69,13 @@ export default class App {
       dao.setData({ player: this.player })
 
       this.initBackground()
-      const pairPool = new PairPool(1000)
+      let time1 = Date.now()
+      let time2 = 0
+      const pairPool = new PairPool(10)
       pairPool.init(() => {
+        time2 = Date.now()
+        console.error(`pairPool init time ${time2 - time1}`);
+        // alert(time2 - time1)
         dao.setData({ pairPool, player: this.player })
         this.addShots()
         this.player.run()
@@ -73,7 +87,8 @@ export default class App {
 
   initBackground() {
     const LITE_PERLIN = false
-    var geometry = new THREE.SphereGeometry(lm.stage.camera.far * 0.9, 32, 12);
+    // lm.stage.camera.far
+    var geometry = new THREE.SphereGeometry(29000 * 0.8, 32, 32);
     var vs = Assets('shaders/background.vs');
     var fs = Assets('shaders/noise.glsl') + Assets('shaders/background.fs');
     var vsLite = Assets('shaders/background-lite.vs')
@@ -98,63 +113,62 @@ export default class App {
     dao.setData({
       floor: floor,
     })
-
-
-
-    // scope.creditNHX = new THREE.Mesh(new THREE.PlaneBufferGeometry(512, 256), new THREE.MeshBasicMaterial({
-    //   map: Assets('textures/cred-nhx.png'),
-    //   transparent: true,
-    //   color: 0x282828
-    // }));
-
-    // scope.creditAAF = new THREE.Mesh(new THREE.PlaneBufferGeometry(1024, 512), new THREE.MeshBasicMaterial({
-    //   map: Assets('textures/cred-aaf.png'),
-    //   transparent: true,
-    //   color: 0x282828
-    // }));
-
-    // scope.creditPopcorn = new THREE.Mesh(new THREE.PlaneBufferGeometry(512, 256), new THREE.MeshBasicMaterial({
-    //   map: Assets('textures/cred-popcorn.png'),
-    //   transparent: true,
-    //   color: 0x282828
-    // }));
-
-
-
-
-    // creditNHX.material.map.minFilter = THREE.LinearFilter;
-    // creditNHX.material.map.magFilter = THREE.NearestFilter;
-
-    // creditAAF.material.map.minFilter = THREE.LinearFilter;
-    // creditAAF.material.map.magFilter = THREE.NearestFilter;
-
-    // creditPopcorn.material.map.minFilter = THREE.LinearFilter;
-    // creditPopcorn.material.map.magFilter = THREE.NearestFilter;
   }
 
   addShots() {
-    const { player } = dao.getData()
+    const { player, bg, stage } = dao.getData()
     if (Config.debug) {
       var testShot = new TestShot()
-      player.addShot(0, testShot)
-      player.timeline.add(
-        dao.getData().bg.wipe(0, 0xffff00)
-        , 10);
+      player.addShot(1, testShot)
+      // player.timeline.add(bg.wipe(0, 0xffff00), 10);
       return
     }
 
-    var introShot = new IntroShot()
-    player.addShot(0, introShot)
-    player.timeline.time(0, false)
-    player.timeline.stop()
+    // var introShot = new IntroShot()
+    // player.addShot(0, introShot)
+    // player.timeline.time(0, false)
+    // player.timeline.stop()
 
-    var anotherDrift = new DriftShot(500, 0.1, 30, false, undefined);
-    player.addShot(0, anotherDrift)
-    this.anotherDrift = anotherDrift
+    // player.addCameraTween(0.01, 5.0, { x: 0, y: 30000, z: 500 });
 
-    var thirdDriftShot = new DriftShot(500, 1, 40, false, undefined);
-    player.addShot(8.5, thirdDriftShot);
-    this.thirdDriftShot = thirdDriftShot
+    // var anotherDrift = new DriftShot(500, 0.1, 30, true);
+    // player.addShot(5.2, anotherDrift)
+    // this.anotherDrift = anotherDrift
 
+    // var thirdDriftShot = new DriftShot(500, 1, 30, false);
+    // player.addShot(8.5, thirdDriftShot);
+    // this.thirdDriftShot = thirdDriftShot
+
+    // var sexyShot01 = new SexyShot();
+    // sexyShot01.len = 10.0;
+    // sexyShot01.distance = 0.5;
+    // sexyShot01.camera.position.z = 100;
+    // sexyShot01.camera.distance = 100;
+    // sexyShot01.credit = true;
+    // player.addShot(18.0, sexyShot01);
+    // player.timeline.add(() => {
+    //   stage.scene.add(bg);
+    //   bg.clear();
+    //   bg.colorHigh = sexyShot01.pair.colorMale;
+    //   bg.position.y = 0;
+    //   bg.updateMatrix();
+    //   bg.soak(6.0)
+    // }, 18);
+
+    // var swirlShot = new SwirlShot();
+    // player.addShot(1, swirlShot);
+
+
+    // var tomFillShot = new JumpShot();
+    // tomFillShot.useTitle = true;
+    // var tomFillTime = 1
+    // player.addShot(tomFillTime, tomFillShot);
+    // player.timeline.call(tomFillShot.jump, [], tomFillShot, tomFillTime);
+    // player.timeline.call(tomFillShot.insert, [], tomFillShot, tomFillTime + 0.6);
+    // player.timeline.call(tomFillShot.jump, [], tomFillShot, tomFillTime + 1);
+    // player.timeline.call(tomFillShot.insert, [], tomFillShot, tomFillTime + 1 + 0.7);
+
+    // var rainShot = new RainShot()
+    // player.addShot(1, rainShot);
   }
 }

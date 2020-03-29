@@ -192,7 +192,6 @@ export default class Camera extends THREE.PerspectiveCamera {
         }
 
         this.position.fromArray(arr.slice(0, 3));
-        // this.rotation.fromArray( arr.slice( 3, 6 ) );
         this.quaternion.fromArray(arr.slice(6, 10));
 
         this.fov = arr[10];
@@ -210,12 +209,6 @@ export default class Camera extends THREE.PerspectiveCamera {
         this.viewOffset.y = arr[14];
         this.viewOffset.width = arr[15];
         this.viewOffset.height = arr[16];
-
-        // getting real gross here
-        // if (Scene.camera === this) {
-        //     Scene.camera = this;
-        // }
-
         return this;
 
     }

@@ -1,18 +1,26 @@
-random.generator = Math.random.bind( Math );
+var TWO_PI = Math.PI * 2;
+var PI = Math.PI;
+var HALF_PI = Math.PI * 0.5;
+var QUARTER_PI = Math.PI * 0.25;
+var RADIANS = 180 / Math.PI;
+var SQRT_HALF = Math.sqrt(0.5);
 
-function random( $1, $2, $3 ) {
 
-    if ( arguments.length == 1 ) {
-        
-        if ( _.isArray( $1 ) ) {
-            return $1[ ~~( random.generator() * ( $1.length - 1 ) ) ];
+random.generator = Math.random.bind(Math);
+
+function random($1, $2, $3) {
+
+    if (arguments.length == 1) {
+
+        if (_.isArray($1)) {
+            return $1[~~(random.generator() * ($1.length - 1))];
         }
 
         return random.generator() * $1;
 
-    } else if ( arguments.length == 2 ) {
+    } else if (arguments.length == 2) {
 
-        return random.generator() * ( $2 - $1 ) + $1;
+        return random.generator() * ($2 - $1) + $1;
 
     }
 
@@ -20,11 +28,11 @@ function random( $1, $2, $3 ) {
 
 };
 
-random.range = function( $1, $2 ) {
+random.range = function ($1, $2) {
 
     var min = -1, max = 1;
 
-    switch ( arguments.length ) {
+    switch (arguments.length) {
         case 1:
             min = -$1;
             max = $1;
@@ -35,15 +43,15 @@ random.range = function( $1, $2 ) {
             break;
     }
 
-    return random.generator() * ( max - min ) + min;
-    
+    return random.generator() * (max - min) + min;
+
 };
 
-random.int = function( $1, $2 ) {
+random.int = function ($1, $2) {
 
     var min = -1, max = 1;
 
-    switch ( arguments.length ) {
+    switch (arguments.length) {
         case 1:
             min = -$1;
             max = $1;
@@ -54,18 +62,18 @@ random.int = function( $1, $2 ) {
             break;
     }
 
-    return ~~( random.generator() * ( max - min ) + min );
-    
+    return ~~(random.generator() * (max - min) + min);
+
 };
 
-random.angle = function() {
-    return random.generator() * TWO_PI;  
+random.angle = function () {
+    return random.generator() * TWO_PI;
 };
 
-random.chance = function( percent ) {
-    return random.generator() < ( percent || 0.5 );
+random.chance = function (percent) {
+    return random.generator() < (percent || 0.5);
 };
 
-random.sign = function() {
+random.sign = function () {
     return random.generator() < 0.5 ? 1 : -1;
 };

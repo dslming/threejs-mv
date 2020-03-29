@@ -1,5 +1,6 @@
 import * as THREE from '../../lib/three.module.js'
 import { OrbitControls } from '../../lib/OrbitControls.js'
+import Config from './Config.js'
 
 let that = null;
 export class Stage {
@@ -15,7 +16,7 @@ export class Stage {
     // 场景
     this.scene = new THREE.Scene();
     this.scene.name = "moumade";
-    // window.scene = this.scene;
+    window.scene = this.scene;
 
     // 环境光
     var ambient = new THREE.AmbientLight(0xffffff, 1.0);
@@ -26,6 +27,11 @@ export class Stage {
     this.containerEle = document.querySelector(container);
     let vW = this.containerEle.clientWidth;
     let vH = this.containerEle.clientHeight;
+    vH = vW / Config.STAGE_ASPECT_RATIO
+    console.error(vW, vH);
+    this.containerEle.style.width = `${vW}px`
+    this.containerEle.style.height = `${vH}px`
+
     this.renderer = new THREE.WebGLRenderer({
       antialias: false,
     });
@@ -71,8 +77,13 @@ export class Stage {
 
   handleResize() {
     // 获取新的大小
-    let vpW = that.containerEle.clientWidth;
-    let vpH = that.containerEle.clientHeight;
+    let vpW = document.body.offsetWidth;
+    // let vpH = that.containerEle.clientHeight;
+    let vpH = vpW / Config.STAGE_ASPECT_RATIO
+    that.containerEle.style.width = `${vpW}px`
+    that.containerEle.style.height = `${vpH}px`
+    console.error(vpW, vpH);
+
     // 设置场景
     that.renderer.domElement.width = vpW;
     that.renderer.domElement.height = vpH;

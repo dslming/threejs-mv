@@ -42,6 +42,9 @@ export default {
 
 .dennis {
   position: relative;
+  display: flex;
+  align-items: center;
+  background: #000;
 }
 #debug-canvas {
   position: fixed;

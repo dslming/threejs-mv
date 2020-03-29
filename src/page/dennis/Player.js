@@ -1,4 +1,6 @@
 import { clamp } from './utils/math.js'
+import dao from './Dao.js'
+
 let that = null
 export default class Player {
   constructor() {
@@ -7,6 +9,9 @@ export default class Player {
     this.timeline.time(0, false);
     this.sound = Assets('mp3/dennis.mp3')
     this.now = 0
+    this.delta = 0
+    this.preNow = 0
+
     this.loopFnArr = []
     this.currentShots = []
     this.active = {}
@@ -40,7 +45,10 @@ export default class Player {
   _update() {
     const smoothed = that.sound.currentTime
     const duration = that.sound.duration | 0
+    that.preNow = that.now
     that.now = clamp(smoothed, 0, duration);
+    that.delta = that.now - that.preNow;
+
     that.timeline.time(that.now, false)
     requestAnimationFrame(that._update)
     that.loopFnArr.forEach(itemFn => {
@@ -65,6 +73,22 @@ export default class Player {
       this.active[shot.id] = shot;
     }, [], shot, time);
     this.currentShots.push(shot)
+  }
+
+  addCameraTween(time, duration, dest) {
+    // var tween = new CameraTween();
+    // tween.easing = ease;
+    // tween.duration = duration;
+    // tween.dest = dest;
+    let { stage } = dao.getData()
+    this.timeline.call(() => {
+      console.error(123);
+      TweenLite.to(stage.camera.position, duration, {
+        x: dest.x,
+        y: dest.y,
+        z: dest.z
+      });
+    }, [], this, time);
   }
 
   _stop() {

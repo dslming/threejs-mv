@@ -83,21 +83,24 @@ class CameraControl {
 }
 
 export default class DriftShot extends PairShot {
-  constructor(cameraDistance, speed, numPairs, useZ, dir, offset, useMidi) {
+  constructor(cameraDistance, speed, numPairs, useMidi) {
     super()
     this.container.name = "DriftShot"
 
     this.camera.position.z = cameraDistance;
     this.speed = speed;
     this.numPairs = numPairs || 1;
-    this.useZ = useZ;
-    this.offset = offset || 0;
-    this.dir = dir;
+    // this.useZ = useZ;
+    this.offset = 0;
+    // this.dir = dir;
     this.useMidi = useMidi === undefined ? true : useMidi;
   }
 
   start() {
     console.error(this.container.name, this.numPairs);
+    const driftContainerStatic = new THREE.Object3D();
+    driftContainerStatic.name = "driftContainerStatic"
+
     for (var i = 0; i < this.numPairs; i++) {
       var behavior = new CameraControl()
       behavior.target = this.next();
@@ -109,7 +112,9 @@ export default class DriftShot extends PairShot {
         random(0, 300),
         this.speed
       );
+      driftContainerStatic.add(behavior.target)
     }
+    this.container.add(driftContainerStatic)
 
     if (this.useMidi) {
       const Midi = Assets('mid/dennis.mid')
@@ -119,8 +124,11 @@ export default class DriftShot extends PairShot {
         time: between(this.in, this.out)
       }));
       console.error("useMidi", popEvents.length);
+      const driftContainerUseMidi = new THREE.Object3D();
+      driftContainerUseMidi.name = "driftContainerUseMidi"
       popEvents.forEach((note, i) => {
         var pair = this.next();
+        driftContainerUseMidi.add(pair)
         pair.scale.set(0.0001, 0.0001, 0.0001);
         var behavior = new CameraControl()
         behavior.target = pair
@@ -137,6 +145,7 @@ export default class DriftShot extends PairShot {
         // jiggle.scale = random(0.85, 1.2);
         this.timeline.call(jiggle.start, [], jiggle, note.time - this.in);
       })
+      this.container.add(driftContainerUseMidi)
     }
     super.start()
   }

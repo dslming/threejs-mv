@@ -1,5 +1,6 @@
 import * as THREE from '../../../../lib/three.module.js'
 import Shuffler from './Shuffler.js'
+
 require('../../../../lib/ThreeCSG.js')
 
 const maleColors = new Shuffler([
@@ -197,12 +198,23 @@ export default class Pair extends THREE.Object3D {
     this.female.material.uniforms.strokeInflate.value = v;
   }
 
+  setFogDistance(v) {
+    // Pair.fogUniforms.far.value = v;
+  }
   jump(y) {
     y = y || 0;
     return new TimelineLite()
       .fromTo(this.position, 0.1, { y: -300 + y }, { y: y, ease: Expo.easeInOut, immediateRender: true }, -0.1)
       .to(this.position, 0.3, { y: 2 + y, ease: Linear.easeNone })
       .to(this.position, 0.5, { y: -500 + y, ease: Expo.easeIn });
+  }
+
+  jump3(h) {
+    h = h || 0;
+    let old = this.position
+    return new TimelineLite()
+      .to(this.position, 0.5, { y: old.y + h, ease: Expo.easeOut })
+      .to(this.position, 0.5, { y: old.y, ease: Expo.easeIn }, 0.5);
   }
 
   jump2(y) {
@@ -212,6 +224,29 @@ export default class Pair extends THREE.Object3D {
       .fromTo(this.scale, 0.3, { y: 1.1, x: 0.9, z: 0.9 }, { y: 1, x: 1, z: 1, ease: Expo.easeInOut, immediateRender: true }, -0.3)
       .to(this.position, 0.1, { y: 1 + y, ease: Quad.easeOut })
       .to(this.position, 0.5, { y: -500 + y, ease: Expo.easeIn }, '+=0.4');
+  }
+
+  insert(speed, maleScale, femaleScale) {
+
+    speed = speed || 1;
+
+    maleScale = maleScale || 1;
+    femaleScale = femaleScale || 1;
+
+    return new TimelineLite()
+
+      .set(this.male, { visible: true }, 0)
+      .to(this.male.position, 0.4 / speed, { z: -4 * femaleScale, ease: Expo.easeIn }, 0)
+      .to(this.male.scale, 0.2 / speed, { z: maleScale, ease: Back.easeOut }, 0)
+
+      .to(this.female.position, 0.25 / speed, { z: -2.8 * femaleScale, ease: Back.easeOut }, 0.4 / speed)
+
+      .to(this.female.scale, 0.01 / speed, { z: femaleScale * 0.3, ease: Back.easeOut }, 0.4 / speed)
+      .to(this.female.scale, 0.13 / speed, { z: femaleScale, ease: Back.easeOut }, 0.41 / speed)
+
+      .to(this.male.scale, 0.01 / speed, { z: maleScale * 0.8, ease: Back.easeOut }, 0.4 / speed)
+      .to(this.male.scale, 0.1 / speed, { z: maleScale, ease: Back.easeOut }, 0.41 / speed)
+
   }
 
   insert2(speed, maleScale, femaleScale) {
@@ -234,5 +269,19 @@ export default class Pair extends THREE.Object3D {
       .to(this.male.scale, 0.01 / speed, { z: maleScale * 0.8, ease: Back.easeOut }, 0.4 / speed)
       .to(this.male.scale, 0.3 / speed, { z: maleScale, ease: Back.easeOut }, 0.51 / speed)
 
+  }
+
+  insert3(speed, maleScale, femaleScale) {
+    let z = this.position.z
+    maleScale = maleScale || 1
+    femaleScale = femaleScale || 1
+
+    new TimelineLite()
+      // ??????
+      .set(this.male, { visible: true }, 0)
+      // ???????
+      .to(this.male.position, 0.5 / speed, { z: 1.5 * maleScale, ease: Expo.easeIn }, 0)
+      // ??????????
+      .to(this.position, 0.5 / speed, { z: this.position.z - 50 * femaleScale, ease: Circ.easeOut }, 0.55 / speed)
   }
 }
